@@ -1,30 +1,22 @@
 package packprincipal;
 
 public class FogNode {
+    private final int idFog;
     private final CloudServer cloudServer;
-    private int contadorAltas = 0;
 
-    public FogNode(CloudServer cloudServer) {
+    public FogNode(int idFog, CloudServer cloudServer) {
+        this.idFog = idFog;
         this.cloudServer = cloudServer;
     }
 
-    public void procesarDato(SensorData data) {
-        String alerta = "";
+    public void procesarDato(int idEdge, SensorData data) {
+        String alerta = (data.getTemperatura() > 30) ? "ALERTA" : "";
+        System.out.println("Fog " + idFog + " (desde Edge " + idEdge + "): " + data + alerta);
         
-        if (data.getTemperatura() > 30) {
-            contadorAltas++;
-            alerta = "ALERTA!!! TEMPERATURA ALTA!!!" + contadorAltas;
-        }
-
-        System.out.println("Recibido " + data + alerta);
         cloudServer.guardarDato(data);
     }
 
-    public boolean limiteAlcanzado() {
-        return contadorAltas >= 20;
-    }
-
-    public int getContadorAltas() {
-        return contadorAltas;
+    public boolean debeParar() {
+        return cloudServer.limiteAlcanzado();
     }
 }
